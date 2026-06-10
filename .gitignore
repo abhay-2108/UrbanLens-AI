@@ -1,0 +1,67 @@
+# Byte-compiled / optimized / runnable Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual Environments
+venv/
+.venv/
+env/
+.env/
+ENV/
+venv.bak/
+
+# IDEs / Editors
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+
+# Database & Logs
+*.log
+*.sql
+*.sqlite
+dump.rdb
+
+# Environment variables
+.env
+.flaskenv
+
+# OS generated files
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# ML Models & Large Data
+*.pt
+*.pth
+*.onnx
+*.bin
+*.h5
+*.pkl
+data/
+raw_images/
+datasets/
