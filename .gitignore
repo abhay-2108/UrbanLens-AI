@@ -62,6 +62,9 @@ Desktop.ini
 *.bin
 *.h5
 *.pkl
+*.keras
+*.onnx.data
+*.data
 data/
 raw_images/
 datasets/

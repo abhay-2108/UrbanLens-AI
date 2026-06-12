@@ -1,63 +1,73 @@
 # UrbanLens AI 🏙️
+> Transform raw city data, street imagery, and social sentiment into a personalized, hyper-local Liveability Index.
 
-UrbanLens AI is a sophisticated urban liveability analysis system that transforms raw city data and street-level imagery into a quantifiable, personalized Liveability Index. Unlike static scoring systems, UrbanLens uses a hierarchical matrix of factors and a dynamic Profile Engine to tailor neighborhood recommendations to the specific needs of different user personas.
+UrbanLens AI is a modular geospatial intelligence system that evaluates neighborhood liveability at the H3 hexagonal grid level. Unlike static rating systems, UrbanLens uses a hierarchical liveability matrix combined with a dynamic Profile Engine to customize neighborhood scores for different user personas (e.g., Students, Remote Engineers, Families).
 
-## 🚀 Core Concept
+---
 
-The system breaks down "Liveability" into a structured matrix of **Factors** and **Sub-Factors**, allowing the backend to apply adjustable weights based on user profiles (e.g., Students, Remote Engineers, Families).
+## 📊 The Liveability Matrix & Factors
 
-## 📊 The Liveability Matrix
+Liveability is computed across 5 core factors, each backed by real-time scrapers and deep-learning inference pipelines:
 
-### 🛡️ 1. Safety & Security (The Absolute Baseline)
-*Focuses on both statistical crime data and the psychological feeling of safety.*
-- **Crime Rate Index:** Localized incident frequency from municipal data.
-- **"Eyes on the Street" Vector:** Density of 24/7 commercial establishments.
-- **Street-Level Illumination:** Detection of functioning streetlights via nighttime imagery.
-- **Emergency Response Proximity:** Distance to police, fire, and medical facilities.
+### 1. 🛡️ Safety & Security
+- **Crime Rate Index:** Localized incident tracking from municipal records.
+- **Street-Level Illumination:** Automatic streetlight detection via night street-imagery segmentation.
+- **Emergency Proximity:** Spatial driving/walking distance to police, fire stations, and hospitals.
 
-### 🍏 2. Sustenance & Daily Essentials (The Conveniences)
-*Measures the ease of handling daily logistics.*
-- **Food Ecosystem:** Density and variety of dining and delivery options.
-- **Grocery & Fresh Produce Access:** Walking distance to markets and supermarkets.
-- **Pharmacy & Healthcare Access:** Proximity to clinics and chemists.
+### 2. 🍏 Sustenance & Daily Essentials
+- **Food Ecosystem & Groceries:** Density and walking distance to supermarkets, fresh produce markets, and restaurants (OpenStreetMap / Overpass API).
+- **Healthcare Access:** Proximity to pharmacies and clinics.
 
-### 🚇 3. Connectivity & Mobility (The Commute)
-*Evaluates accessibility for both vehicle owners and public transit users.*
-- **Public Transit Density:** Proximity to metro, bus, and train stations.
-- **Last-Mile Accessibility:** Availability of ride-sharing and rentals.
-- **Traffic Congestion Index:** Peak-hour bottleneck analysis.
-- **Pedestrian Infrastructure:** Quality of sidewalks and crossings (via Computer Vision).
+### 3. 🚇 Connectivity & Mobility
+- **Public Transit Density:** Distance to metro stations, bus stops, and railway hubs.
+- **Last-Mile Accessibility:** Density of ride-share pick-ups and pedestrian infrastructure.
+- **Sidewalk Quality:** Semantic segmentation of sidewalk surfaces via Computer Vision.
 
-### 🌳 4. Health & Environmental Vibe (The Long-Term Comfort)
-*Analyzes factors impacting physical and mental well-being.*
-- **The Green Canopy Score:** Percentage of foliage at eye level (via `DeepLabV3` segmentation).
-- **Air Quality Index (AQI):** Real-time and historical $PM_{2.5}$ and $PM_{10}$ levels.
-- **Acoustic Comfort:** Noise pollution levels from industrial/highway proximity.
-- **Climate Resilience:** Topographical elevation and flooding history.
+### 4. 🌳 Health & Environmental Vibe
+- **Green Canopy Score:** Foliage percentage calculated via `DeepLabV3` segmentation on street view images.
+- **Air Quality Index (AQI):** 4-hour forecasts and pollutant prediction using LSTM and CNN models.
+- **Climate Resilience:** Elevation mapping from Open-Elevation API to assess flood risks.
 
-### 🎭 5. Lifestyle, Recreation & Community (The "Vibe" Check)
-*Captures the cultural and social character of a neighborhood.*
-- **Public Social Spaces:** Access to parks, lakes, and walking tracks.
-- **Entertainment Hubs:** Proximity to malls, theaters, and cultural centers.
-- **Fitness Infrastructure:** Density of gyms and sports complexes.
-- **Neighborhood Sentiment Layer:** Analysis of community discussions (Reddit, local forums).
+### 5. 🎭 Lifestyle & Community Vibe
+- **Public Spaces:** Access to parks, lakes, and walking tracks.
+- **Neighborhood Sentiment:** Real-time social signal analysis of local subreddits (Reddit API) to capture neighborhood complaints (e.g., water logging, power cuts).
 
-## ⚙️ The Profile Engine
+---
 
-The system maps the matrix to specific user presets to provide personalized scoring:
+## 🛠️ Technology Stack
 
-| Preset | High Weight Factors | Low Weight Factors |
+| Component | Technology | Description |
 | :--- | :--- | :--- |
-| **Student** | Food Ecosystem, Public Transit, Entertainment | Schools, Hospitals |
-| **Remote Engineer** | Acoustic Comfort, Grocery Access, Sentiment Layer | Commute Density |
-| **Family** | Safety Indexes, Schools/Healthcare, Social Spaces | Nightlife Density |
+| **Grid System** | Uber H3 (Res 8) | Discretizes urban areas into hexagons (~0.73 km²) |
+| **Databases** | MongoDB & PostgreSQL (PostGIS) | Dual setup: raw ingestion logs (NoSQL) & spatial indices (PostGIS) |
+| **Inference Engine** | Keras / ONNX Runtime | Hosts LSTM, CNN, MLP, and multi-task models |
+| **Orchestration** | Apache Airflow | Schedules weekly scrapers and CV pipeline jobs |
+| **Data Ingest** | Python HTTP Agents | Custom scrapers for OSM Overpass, Open-Elevation, Reddit, and Mapillary |
 
-## 🛠️ Technical Stack (Planned)
-- **Computer Vision:** `DeepLabV3` for semantic segmentation of street imagery.
-- **Data Sources:** Municipal APIs, OpenStreetMap, Social Media (Reddit), Environmental Sensors.
-- **Analysis:** Weighted Matrix Algorithm for personalized liveability scoring.
+---
 
-## 📈 Future Roadmap
-- [ ] Integration of Rent-to-Income ratios for economic accessibility.
-- [ ] Utility reliability tracking (Power/Water consistency).
-- [ ] "15-Minute City" binary scoring.
+## 📂 Repository Structure
+
+```
+├── .env.example              # Environment variables template
+├── requirements.txt          # Python dependencies
+├── mcp_server/               # Air Quality Model Reasoning MCP Server
+│   ├── server.py             # FastMCP entry point (LSTM, CNN, MLP, Health models)
+│   └── remote_api_mcp.py     # Remote API testing script
+├── models/                   # Deep learning binaries (ONNX, Keras saved models)
+├── src/                      # Source Code
+│   ├── database/             # MongoDB & PostgreSQL schemas
+│   ├── scrapers/             # Ingestion scripts (OSM, AQI, Elevation, Reddit, Mapillary)
+│   ├── pipelines/            # Analysis engines (Walkability, Computer Vision)
+│   └── orchestration/        # Workflow DAGs (Airflow, Prefect)
+├── tests/                    # Integration and unit tests
+└── docs/                     # Documentation & Architecture logs
+```
+
+---
+
+## 🚀 Getting Started
+
+To run the project, set up your local environment, configure databases, and launch the scrapers:
+1. Refer to [RUNNING_INSTRUCTIONS.md](file:///p:/Hackathons/UrbanLens%20AI/RUNNING_INSTRUCTIONS.md) for detailed deployment commands and API key generation steps.
+2. Read [docs/implementation_details.md](file:///p:/Hackathons/UrbanLens%20AI/docs/implementation_details.md) to understand the technical architecture and phase-by-phase development timeline.
